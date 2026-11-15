@@ -1,6 +1,6 @@
 # LED Sign Board / LED ဆိုင်းဘုတ်
 
-LINK ~~ {https://ath1t.github.io/led-signboard/}
+LINK ~~ [https://ath1t.github.io/led-signboard/]
 
 [English](#english) | [မြန်မာ](#မြန်မာ)
 
