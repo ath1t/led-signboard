@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -11,27 +11,28 @@
 <style>
 :root{color-scheme:dark;--panel:#15171b;--line:#2c3038;--text:#eef0f4;--mute:#9298a4;--acc:#ffb000}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:#000;color:var(--text);font:15px/1.6 "Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-canvas{position:fixed;left:0;top:0;display:block;background:#000;touch-action:manipulation}
+html,body{height:100%;margin:0;background:#000;color:var(--text);font:15px/1.6 "Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
+body{position:relative}
+canvas{position:fixed;inset:0;display:block;background:#000;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.bar{position:fixed;z-index:5;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;transition:opacity .3s}
+.bar{position:fixed;z-index:5;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;transition:opacity .22s ease}
 body.idle .bar{opacity:0;pointer-events:none}
 .pill{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:rgba(21,23,27,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-#toast{position:fixed;z-index:20;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#222630;border:1px solid var(--line);opacity:0;pointer-events:none;transition:.25s;text-align:center}
+#toast{position:fixed;z-index:20;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:rgba(15,17,20,.9);border:1px solid var(--line);color:var(--text);font-size:14px;opacity:0;transition:opacity .2s ease, transform .2s ease;pointer-events:none}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-#panel{position:fixed;z-index:10;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:82%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s;-webkit-user-select:none;user-select:none}
+#panel{position:fixed;z-index:10;left:0;right:0;bottom:0;margin:0 auto;max-width:min(92vw,560px);width:min(92vw,560px);max-height:min(82vh,560px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(calc(100% + 10px));transition:transform .24s ease, opacity .24s ease;box-shadow:0 -18px 60px rgba(0,0,0,.45)}
 #panel.open{transform:none}
 .grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
 .f{display:block;margin:0 0 14px}
 .f>span,.lbl{display:block;color:var(--mute);font-size:13px;margin-bottom:6px}
-textarea{width:100%;resize:none;background:#0d0e11;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
+textarea{width:100%;resize:none;background:#0d0e11;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;-webkit-user-select:text;user-select:text;min-height:82px}
 .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .seg button{min-height:42px;border-radius:10px;border:1px solid var(--line);background:#0d0e11;font-size:14px;padding:6px 4px;line-height:1.4}
 .seg button[aria-pressed=true]{border-color:var(--acc);color:var(--acc);background:#1d1a10}
 input[type=range]{width:100%;height:32px;accent-color:var(--acc)}
 .sw{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.sw button{width:40px;height:40px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px var(--line)}
+.sw button{width:40px;height:40px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px var(--line);padding:0;background:transparent}
 .sw button[aria-pressed=true]{border-color:#fff}
 .sw input{width:44px;height:40px;border:0;background:none;padding:0}
 .chk{display:flex;align-items:center;gap:10px;min-height:40px;margin:0 0 4px}
@@ -39,7 +40,20 @@ input[type=range]{width:100%;height:32px;accent-color:var(--acc)}
 .go{display:flex;gap:8px;margin-top:10px}
 .go button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line);background:#0d0e11}
 .go .main{background:var(--acc);color:#1a1200;border-color:var(--acc);font-weight:700}
-.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}.lang{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#0d0e11}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}.lang{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent}
+@media (max-width:460px){
+  .bar{gap:6px;right:calc(8px + env(safe-area-inset-right,0px));top:calc(8px + env(safe-area-inset-top,0px))}
+  .pill{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px}
+  textarea{font-size:15px;min-height:74px}
+  .seg{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seg button{font-size:13px;padding:8px 6px}
+  .sw{gap:8px}
+  .sw button{width:36px;height:36px}
+  .sw input{width:40px;height:36px}
+  .go button{min-height:46px}
+  .foot{font-size:12px}
+  .lang{min-height:32px;padding:0 10px}
+}
 </style>
 </head>
 <body>
@@ -74,7 +88,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--acc)}
     <button id="fs2">Full screen</button>
     <button class="main" id="done">Show sign</button>
   </div>
-<div class="foot"><button class="lang" id="lang" type="button">English</button><span>Vibe Coded By Thio</span></div>
+  <div class="foot"><button class="lang" id="lang" type="button">English</button><span>Vibe Coded By Thio</span></div>
 </section>
 
 <script>
@@ -83,10 +97,10 @@ var $=function(i){return document.getElementById(i)};
 var S={lang:'my',text:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',mode:'left',speed:40,size:72,dot:10,color:'#ffb000',rot:false,mir:false};
 try{Object.assign(S,JSON.parse(localStorage.getItem('ledsign')||'{}'))}catch(e){}
 function save(){try{localStorage.setItem('ledsign',JSON.stringify(S))}catch(e){}}
-
 var T={
-my:{title:'LED ဆိုင်းဘုတ်',def:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',edit:'ပြင်ရန်',fs:'မျက်နှာပြင်အပြည့်',xfs:'အပြည့်မှ ထွက်ရန်',message:'စာသား',ph:'စာသားရိုက်ထည့်ပါ',effect:'ပုံစံ',left:'ဘယ်သို့ ရွေ့',right:'ညာသို့ ရွေ့',still:'ငြိမ်',blink:'မှိတ်တုတ်',speed:'ရွေ့နှုန်း',size:'စာလုံးအရွယ်',dot:'အစက်အရွယ်',color:'အရောင်',rot:'ဘေးတိုက် လှည့်ပြရန် (ဖုန်းကို မတ်တပ်ကိုင်ပါ)',mir:'စာသားကို မှန်ပြောင်းပြန်ပြရန်',done:'ပြသရန်',lang:'English',nofs:'ဤဘရောက်ဇာတွင် မျက်နှာပြင်အပြည့် မရနိုင်ပါ။ Share နှိပ်ပြီး Add to Home Screen ကို ရွေးပါ။'},
-en:{title:'LED Sign Board',def:'WELCOME! TAP THE SCREEN TO EDIT',edit:'Edit',fs:'Full screen',xfs:'Exit full screen',message:'Message',ph:'Type your message',effect:'Effect',left:'Scroll left',right:'Scroll right',still:'Still',blink:'Blink',speed:'Scroll speed',size:'Text size',dot:'Dot size',color:'Colour',rot:'Turn sign sideways (hold phone upright)',mir:'Mirror text',done:'Show sign',lang:'မြန်မာ',nofs:'Full screen isn’t available in this browser. Use Share, then Add to Home Screen, to hide the browser bars.'}};
+  my:{title:'LED ဆိုင်းဘုတ်',def:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',edit:'ပြင်ရန်',fs:'စခရင်',xfs:'စခရင်မှ ထွက်ရန်',message:'စာသား',ph:'စာသား ရေးပါ',effect:'အရာသွားပုံ',left:'ဘယ်ဘက်သို့',right:'ညာဘက်သို့',still:'မရွေ့',blink:'စက်ဝိုင်း',speed:'အမြန်နှုန်း',size:'စာလုံးအရွယ်',dot:'အမှတ်အရွယ်',color:'အရောင်',rot:'အလျားလိုက် စံနစ် (ဖုန်းကို ညာဘက်သို့ ထောင်)',mir:'စာသားကို ပုံနှိမ်',done:'ပြသရန်',lang:'English',nofs:'ဖန်သားပြင်မရနိုင်ပါ'},
+  en:{title:'LED Sign Board',def:'WELCOME! TAP THE SCREEN TO EDIT',edit:'Edit',fs:'Full screen',xfs:'Exit full screen',message:'Message',ph:'Type your message',effect:'Effect',left:'Scroll left',right:'Scroll right',still:'Still',blink:'Blink',speed:'Scroll speed',size:'Text size',dot:'Dot size',color:'Colour',rot:'Turn sign sideways (hold phone upright)',mir:'Mirror text',done:'Show sign',lang:'မြန်မာ',nofs:'Full screen is not available on this device'}
+};
 if(!T[S.lang])S.lang='my';
 if(S.text===T.en.def)S.text=T[S.lang].def;
 function tr(k){return T[S.lang][k]}
@@ -96,19 +110,28 @@ var cv=$('cv'),ctx=cv.getContext('2d');
 var W,H,dpr,cols,rows,pitch,ox,oy,sprite,grid,msk,mw=1,period=1,off=0,last=0;
 
 function hexA(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'}
-
+function getViewport(){
+  var vp=window.visualViewport;
+  return {w: vp ? vp.width : window.innerWidth, h: vp ? vp.height : window.innerHeight};
+}
 function layout(){
   dpr=Math.min(window.devicePixelRatio||1,2);
-  var vw=window.innerWidth,vh=window.innerHeight;
-  W=S.rot?vh:vw;H=S.rot?vw:vh;
-  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
-  cv.style.width=W+'px';cv.style.height=H+'px';
-  cv.style.transformOrigin='0 0';
-  cv.style.transform=S.rot?'translate('+vw+'px,0) rotate(90deg)':'none';
+  var v=getViewport();
+  W=S.rot?v.h:v.w;
+  H=S.rot?v.w:v.h;
+  cv.width=Math.round(W*dpr);
+  cv.height=Math.round(H*dpr);
+  cv.style.width=W+'px';
+  cv.style.height=H+'px';
+  cv.style.transformOrigin='center center';
+  cv.style.transform=S.rot ? 'rotate(90deg)' : 'none';
   pitch=S.dot;
-  cols=Math.max(1,Math.floor(W/pitch));rows=Math.max(1,Math.floor(H/pitch));
-  ox=(W-cols*pitch)/2;oy=(H-rows*pitch)/2;
-  restyle();rebuild();
+  cols=Math.max(1,Math.floor(W/pitch));
+  rows=Math.max(1,Math.floor(H/pitch));
+  ox=(W-cols*pitch)/2;
+  oy=(H-rows*pitch)/2;
+  restyle();
+  rebuild();
 }
 
 function restyle(){
@@ -212,10 +235,10 @@ function frame(t){
   requestAnimationFrame(frame);
 }
 
-/* ---------- UI ---------- */
 var panel=$('panel'),hideT,toastT;
 function poke(){
-  document.body.classList.remove('idle');clearTimeout(hideT);
+  document.body.classList.remove('idle');
+  clearTimeout(hideT);
   if(!panel.classList.contains('open'))hideT=setTimeout(function(){document.body.classList.add('idle')},3000);
 }
 function setPanel(o){panel.classList.toggle('open',o);poke()}
@@ -254,18 +277,17 @@ $('done').onclick=function(){setPanel(false)};
 $('lang').onclick=function(){var o=S.lang;S.lang=o==='my'?'en':'my';if(S.text===T[o].def)S.text=T[S.lang].def;sync();rebuild();save()};
 cv.addEventListener('pointerdown',function(){lock();if(panel.classList.contains('open'))setPanel(false);else poke()});
 
-/* full screen */
 var root=document.documentElement;
 function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement}
 function toggleFS(){
   var req=root.requestFullscreen||root.webkitRequestFullscreen;
-  if(fsEl()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return}
+  if(fsEl()){
+    (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    return;
+  }
   setPanel(false);
   if(!req){noFS();return}
-  try{
-    var p=req.call(root);
-    if(p&&p.catch)p.catch(noFS);
-  }catch(e){noFS()}
+  try{var p=req.call(root);if(p&&p.catch)p.catch(noFS)}catch(e){noFS()}
 }
 function noFS(){toast(tr('nofs'))}
 function fsLabel(){apply();layout();poke()}
@@ -273,7 +295,6 @@ $('fs').onclick=toggleFS;$('fs2').onclick=toggleFS;
 document.addEventListener('fullscreenchange',fsLabel);
 document.addEventListener('webkitfullscreenchange',fsLabel);
 
-/* keep screen awake */
 var wl=null;
 function lock(){try{if('wakeLock' in navigator&&!wl){navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})}}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)lock()});
@@ -282,6 +303,7 @@ var rz;
 function onResize(){cancelAnimationFrame(rz);rz=requestAnimationFrame(layout)}
 window.addEventListener('resize',onResize);
 window.addEventListener('orientationchange',onResize);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',onResize);
 
 sync();layout();lock();poke();
 try{document.fonts.load('700 20px "Noto Sans Myanmar"','က').then(rebuild)}catch(e){}
