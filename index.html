@@ -14,7 +14,7 @@
 
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icons/icon.svg">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,22 +69,16 @@ textarea:focus-visible {
   outline-offset: 3px;
 }
 
-#screen {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  background: #000;
-}
-
 #display {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   display: block;
   background: #000;
-  transform-origin: center;
+  transform-origin: center center;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .topbar {
@@ -118,6 +112,7 @@ body.idle .topbar {
   left: 50%;
   bottom: 0;
   width: min(94vw, 560px);
+  max-height: 86vh;
   max-height: 86dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -335,6 +330,7 @@ input[type="range"] {
 @media (max-width: 420px) {
   #panel {
     width: 100%;
+    max-height: 88vh;
     max-height: 88dvh;
   }
 
@@ -359,9 +355,7 @@ input[type="range"] {
 
 <body>
 
-<div id="screen">
-  <canvas id="display"></canvas>
-</div>
+<canvas id="display"></canvas>
 
 <div class="topbar">
   <button class="pill" id="editBtn">Edit</button>
@@ -370,7 +364,7 @@ input[type="range"] {
 
 <div id="toast" role="status" aria-live="polite"></div>
 
-<section id="panel">
+<section id="panel" aria-label="LED settings">
   <div class="grip"></div>
 
   <div class="heading">
@@ -379,13 +373,13 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <label for="message">Your message</label>
+    <label for="message" data-i18n="message">Your message</label>
     <textarea id="message" maxlength="300"
       placeholder="Type your message..."></textarea>
   </div>
 
   <div class="field">
-    <span class="label">Animation effect</span>
+    <span class="label" data-i18n="effect">Animation effect</span>
     <div class="segment" id="effects">
       <button data-mode="left">← Left</button>
       <button data-mode="right">Right →</button>
@@ -397,7 +391,7 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <label for="speed">Animation speed</label>
+    <label for="speed" data-i18n="speed">Animation speed</label>
     <input type="range" id="speed" min="5" max="150" value="40">
     <div class="range-info">
       <span>Slow</span><span id="speedValue">40</span><span>Fast</span>
@@ -405,7 +399,7 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <label for="size">Text size</label>
+    <label for="size" data-i18n="size">Text size</label>
     <input type="range" id="size" min="30" max="100" value="72">
     <div class="range-info">
       <span>Small</span><span id="sizeValue">72%</span><span>Large</span>
@@ -413,7 +407,7 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <label for="dot">LED dot size</label>
+    <label for="dot" data-i18n="dot">LED dot size</label>
     <input type="range" id="dot" min="4" max="24" value="10">
     <div class="range-info">
       <span>Fine</span><span id="dotValue">10 px</span><span>Large</span>
@@ -421,7 +415,7 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <label for="brightness">Brightness</label>
+    <label for="brightness" data-i18n="brightness">Brightness</label>
     <input type="range" id="brightness" min="10" max="100" value="100">
     <div class="range-info">
       <span>Dim</span><span id="brightnessValue">100%</span><span>Bright</span>
@@ -429,30 +423,39 @@ input[type="range"] {
   </div>
 
   <div class="field">
-    <span class="label">LED colour</span>
+    <span class="label" data-i18n="color">LED colour</span>
     <div class="colors" id="colors">
-      <button class="color" style="--color:#ffb000" data-color="#ffb000" aria-label="Amber"></button>
-      <button class="color" style="--color:#ff2525" data-color="#ff2525" aria-label="Red"></button>
-      <button class="color" style="--color:#22ff66" data-color="#22ff66" aria-label="Green"></button>
-      <button class="color" style="--color:#22d3ff" data-color="#22d3ff" aria-label="Blue"></button>
-      <button class="color" style="--color:#ff4fd8" data-color="#ff4fd8" aria-label="Pink"></button>
-      <button class="color" style="--color:#ffffff" data-color="#ffffff" aria-label="White"></button>
-      <input type="color" id="customColor" value="#ffb000" aria-label="Custom colour">
+      <button class="color" style="--color:#ffb000"
+        data-color="#ffb000" aria-label="Amber"></button>
+      <button class="color" style="--color:#ff2525"
+        data-color="#ff2525" aria-label="Red"></button>
+      <button class="color" style="--color:#22ff66"
+        data-color="#22ff66" aria-label="Green"></button>
+      <button class="color" style="--color:#22d3ff"
+        data-color="#22d3ff" aria-label="Blue"></button>
+      <button class="color" style="--color:#ff4fd8"
+        data-color="#ff4fd8" aria-label="Pink"></button>
+      <button class="color" style="--color:#ffffff"
+        data-color="#ffffff" aria-label="White"></button>
+      <input type="color" id="customColor"
+        value="#ffb000" aria-label="Custom colour">
     </div>
   </div>
 
   <div class="field checks">
     <label class="check">
       <input type="checkbox" id="rotate">
-      Rotate display 90°
+      <span data-i18n="rotate">Rotate display 90°</span>
     </label>
+
     <label class="check">
       <input type="checkbox" id="mirror">
-      Mirror text
+      <span data-i18n="mirror">Mirror text</span>
     </label>
+
     <label class="check">
       <input type="checkbox" id="glow" checked>
-      LED glow effect
+      <span data-i18n="glow">LED glow effect</span>
     </label>
   </div>
 
@@ -473,6 +476,7 @@ input[type="range"] {
 'use strict';
 
 const $ = id => document.getElementById(id);
+
 const canvas = $('display');
 const ctx = canvas.getContext('2d', { alpha: false });
 
@@ -490,10 +494,13 @@ const DEFAULTS = {
   lang: 'my'
 };
 
+const modes = ['left', 'right', 'up', 'down', 'still', 'blink'];
+
 let settings = { ...DEFAULTS };
 
 try {
   const stored = JSON.parse(localStorage.getItem('ledsign-v2') || '{}');
+
   if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
     settings = { ...settings, ...stored };
   }
@@ -501,26 +508,28 @@ try {
   console.warn('Settings could not be loaded.', error);
 }
 
-const modes = ['left', 'right', 'up', 'down', 'still', 'blink'];
-
-if (!modes.includes(settings.mode)) settings.mode = 'left';
 if (!['my', 'en'].includes(settings.lang)) settings.lang = 'my';
+if (!modes.includes(settings.mode)) settings.mode = 'left';
 
 settings.message = typeof settings.message === 'string'
-  ? settings.message.slice(0, 300) : DEFAULTS.message;
+  ? settings.message.slice(0, 300)
+  : DEFAULTS.message;
 
-for (const key of ['speed', 'size', 'dot', 'brightness']) {
-  const limits = {
-    speed: [5, 150],
-    size: [30, 100],
-    dot: [4, 24],
-    brightness: [10, 100]
-  };
-  settings[key] = Number(settings[key]);
-  if (!Number.isFinite(settings[key])) settings[key] = DEFAULTS[key];
-  settings[key] = Math.max(limits[key][0],
-    Math.min(limits[key][1], settings[key]));
-}
+const limits = {
+  speed: [5, 150],
+  size: [30, 100],
+  dot: [4, 24],
+  brightness: [10, 100]
+};
+
+Object.keys(limits).forEach(key => {
+  const value = Number(settings[key]);
+  const [min, max] = limits[key];
+
+  settings[key] = Number.isFinite(value)
+    ? Math.max(min, Math.min(max, value))
+    : DEFAULTS[key];
+});
 
 if (!/^#[0-9a-f]{6}$/i.test(settings.color)) {
   settings.color = DEFAULTS.color;
@@ -555,9 +564,9 @@ const translations = {
     show: 'Show sign',
     language: 'မြန်မာ',
     install: 'Install app',
-    unavailable: 'Fullscreen is unavailable.',
-    saved: 'Settings saved'
+    unavailable: 'Fullscreen is unavailable.'
   },
+
   my: {
     edit: 'ပြင်ရန်',
     fullscreen: 'စခရင်အပြည့်',
@@ -582,8 +591,7 @@ const translations = {
     show: 'ပြသရန်',
     language: 'English',
     install: 'App ထည့်သွင်းရန်',
-    unavailable: 'စခရင်အပြည့် မရနိုင်ပါ။',
-    saved: 'သိမ်းဆည်းပြီးပါပြီ'
+    unavailable: 'စခရင်အပြည့် မရနိုင်ပါ။'
   }
 };
 
@@ -595,14 +603,19 @@ let cols = 0;
 let rows = 0;
 let pitch = 10;
 let dpr = 1;
+
 let offset = 0;
 let lastTime = 0;
+
 let maskCanvas = null;
 let maskCtx = null;
 let maskWidth = 1;
 let maskHeight = 1;
 let maskData = null;
+
+let gridCanvas = null;
 let animationId = 0;
+let resizeTimer = null;
 let rebuildQueued = false;
 let wakeLock = null;
 let hideTimer = null;
@@ -619,34 +632,11 @@ function save() {
 
 function viewport() {
   const v = window.visualViewport;
+
   return {
     width: v ? v.width : window.innerWidth,
     height: v ? v.height : window.innerHeight
   };
-}
-
-function layout() {
-  const v = viewport();
-
-  logicalWidth = settings.rotate ? v.height : v.width;
-  logicalHeight = settings.rotate ? v.width : v.height;
-
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  canvas.width = Math.max(1, Math.round(logicalWidth * dpr));
-  canvas.height = Math.max(1, Math.round(logicalHeight * dpr));
-
-  canvas.style.width = logicalWidth + 'px';
-  canvas.style.height = logicalHeight + 'px';
-  canvas.style.transform = settings.rotate
-    ? 'translate(-50%, -50%) rotate(90deg)'
-    : 'translate(-50%, -50%)';
-
-  pitch = settings.dot;
-  cols = Math.max(1, Math.floor(logicalWidth / pitch));
-  rows = Math.max(1, Math.floor(logicalHeight / pitch));
-
-  buildMask();
 }
 
 function fontFamily() {
@@ -659,7 +649,11 @@ function splitText(text) {
       settings.lang === 'my' ? 'my' : 'en',
       { granularity: 'grapheme' }
     );
-    return Array.from(segmenter.segment(text), x => x.segment);
+
+    return Array.from(
+      segmenter.segment(text),
+      item => item.segment
+    );
   }
 
   return Array.from(text);
@@ -685,27 +679,28 @@ function wrapText(text, maxWidth, fontSize) {
 
       if (maskCtx.measureText(candidate).width <= maxWidth) {
         line = candidate;
-      } else {
-        if (line) lines.push(line);
+        continue;
+      }
 
-        if (maskCtx.measureText(word).width > maxWidth) {
-          let part = '';
+      if (line) lines.push(line);
 
-          for (const char of splitText(word)) {
-            const next = part + char;
+      if (maskCtx.measureText(word).width > maxWidth) {
+        let part = '';
 
-            if (part && maskCtx.measureText(next).width > maxWidth) {
-              lines.push(part);
-              part = char;
-            } else {
-              part = next;
-            }
+        for (const char of splitText(word)) {
+          const next = part + char;
+
+          if (part && maskCtx.measureText(next).width > maxWidth) {
+            lines.push(part);
+            part = char;
+          } else {
+            part = next;
           }
-
-          line = part;
-        } else {
-          line = word;
         }
+
+        line = part;
+      } else {
+        line = word;
       }
     }
 
@@ -715,75 +710,150 @@ function wrapText(text, maxWidth, fontSize) {
   return lines.length ? lines : [' '];
 }
 
+function layout() {
+  const v = viewport();
+
+  logicalWidth = settings.rotate ? v.height : v.width;
+  logicalHeight = settings.rotate ? v.width : v.height;
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.max(1, Math.round(logicalWidth * dpr));
+  canvas.height = Math.max(1, Math.round(logicalHeight * dpr));
+
+  canvas.style.width = logicalWidth + 'px';
+  canvas.style.height = logicalHeight + 'px';
+
+  canvas.style.transform = settings.rotate
+    ? 'translate(-50%, -50%) rotate(90deg)'
+    : 'translate(-50%, -50%)';
+
+  pitch = settings.dot;
+
+  cols = Math.max(1, Math.floor(logicalWidth / pitch));
+  rows = Math.max(1, Math.floor(logicalHeight / pitch));
+
+  buildGrid();
+  buildMask();
+}
+
+function buildGrid() {
+  gridCanvas = document.createElement('canvas');
+
+  gridCanvas.width = canvas.width;
+  gridCanvas.height = canvas.height;
+
+  const gx = gridCanvas.getContext('2d');
+
+  const radius = Math.max(0.6, pitch * dpr * 0.10);
+
+  gx.fillStyle = 'rgba(255,255,255,0.10)';
+  gx.beginPath();
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const px = (x + 0.5) * pitch * dpr;
+      const py = (y + 0.5) * pitch * dpr;
+
+      gx.moveTo(px + radius, py);
+      gx.arc(px, py, radius, 0, Math.PI * 2);
+    }
+  }
+
+  gx.fill();
+}
+
 function buildMask() {
   if (!cols || !rows) return;
 
-  maskCanvas = document.createElement('canvas');
-  maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
+  const horizontal = settings.mode === 'left' ||
+                     settings.mode === 'right';
 
-  const horizontal = settings.mode === 'left' || settings.mode === 'right';
+  const vertical = settings.mode === 'up' ||
+                   settings.mode === 'down';
+
   const message = settings.message || ' ';
-
   const isMyanmar = /[\u1000-\u109F]/.test(message);
   const factor = isMyanmar ? 0.78 : 0.9;
 
-  const fontSize = Math.max(3, rows * settings.size / 100 * factor);
+  maskCanvas = document.createElement('canvas');
+
+  maskCtx = maskCanvas.getContext('2d', {
+    willReadFrequently: true
+  });
+
+  let fs = Math.max(
+    3,
+    rows * settings.size / 100 * factor
+  );
 
   if (horizontal) {
-    maskCtx.font = '900 ' + fontSize + 'px ' + fontFamily();
+    maskCtx.font = '900 ' + fs + 'px ' + fontFamily();
 
     const text = message.replace(/\r/g, '').replace(/\n/g, '   ');
-    const textWidth = maskCtx.measureText(text).width;
+    const width = maskCtx.measureText(text).width;
 
-    maskWidth = Math.max(1, Math.ceil(textWidth) + cols);
+    maskWidth = Math.max(1, Math.ceil(width + cols));
     maskHeight = rows;
 
     maskCanvas.width = maskWidth;
     maskCanvas.height = maskHeight;
 
-    maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
-    maskCtx.font = '900 ' + fontSize + 'px ' + fontFamily();
-    maskCtx.textBaseline = 'middle';
+    maskCtx = maskCanvas.getContext('2d', {
+      willReadFrequently: true
+    });
+
+    maskCtx.font = '900 ' + fs + 'px ' + fontFamily();
     maskCtx.textAlign = 'left';
+    maskCtx.textBaseline = 'middle';
     maskCtx.fillStyle = '#fff';
 
     maskCtx.fillText(text, cols / 2, rows / 2);
+
   } else {
+    const staticMode = !vertical;
+    const maxHeight = staticMode ? rows : Math.max(rows * 2, 1);
+
     maskWidth = cols;
-    maskHeight = Math.max(rows * 2, 1);
+    maskHeight = maxHeight;
 
     maskCanvas.width = maskWidth;
     maskCanvas.height = maskHeight;
 
-    maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
+    maskCtx = maskCanvas.getContext('2d', {
+      willReadFrequently: true
+    });
 
-    let fs = fontSize;
     let lines = [];
 
-    for (let i = 0; i < 30; i++) {
-      lines = wrapText(message, cols - 2, fs);
+    for (let i = 0; i < 40; i++) {
+      lines = wrapText(message, Math.max(1, cols - 2), fs);
 
       const lineHeight = fs * 1.25;
-      const required = lines.length * lineHeight;
+      const requiredHeight = lines.length * lineHeight;
 
-      if (required <= maskHeight - 2 || fs <= 3) break;
+      if (requiredHeight <= maxHeight - 2 || fs <= 3) break;
+
       fs *= 0.9;
     }
 
     maskCtx.font = '900 ' + fs + 'px ' + fontFamily();
-    maskCtx.fillStyle = '#fff';
     maskCtx.textAlign = 'center';
     maskCtx.textBaseline = 'middle';
+    maskCtx.fillStyle = '#fff';
 
     const lineHeight = fs * 1.25;
     const totalHeight = lines.length * lineHeight;
-    const startY = Math.max(1, (maskHeight - totalHeight) / 2);
 
-    lines.forEach((line, i) => {
+    const startY = staticMode
+      ? Math.max(1, (rows - totalHeight) / 2)
+      : Math.max(1, (maxHeight - totalHeight) / 2);
+
+    lines.forEach((line, index) => {
       maskCtx.fillText(
         line,
         cols / 2,
-        startY + (i + 0.5) * lineHeight
+        startY + (index + 0.5) * lineHeight
       );
     });
   }
@@ -803,21 +873,13 @@ function buildMask() {
 
 function queueRebuild() {
   if (rebuildQueued) return;
+
   rebuildQueued = true;
 
   requestAnimationFrame(() => {
     rebuildQueued = false;
     buildMask();
   });
-}
-
-function hexRGB(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return {
-    r: (n >> 16) & 255,
-    g: (n >> 8) & 255,
-    b: n & 255
-  };
 }
 
 function drawFrame(time) {
@@ -834,11 +896,15 @@ function drawFrame(time) {
                    settings.mode === 'down';
 
   if (horizontal || vertical) {
-    const direction = settings.mode === 'left' ||
-                      settings.mode === 'up' ? 1 : -1;
+    const direction =
+      settings.mode === 'left' ||
+      settings.mode === 'up' ? 1 : -1;
 
     const extent = horizontal ? maskWidth : maskHeight;
-    offset = (offset + direction * settings.speed * dt) % extent;
+
+    offset = (
+      offset + direction * settings.speed * dt
+    ) % extent;
 
     if (offset < 0) offset += extent;
   }
@@ -846,18 +912,25 @@ function drawFrame(time) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
+
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const color = hexRGB(settings.color);
+  if (gridCanvas) {
+    ctx.drawImage(gridCanvas, 0, 0);
+  }
+
+  const color = settings.color;
+  const brightness = settings.brightness / 100;
+
   const lit = settings.mode !== 'blink' ||
               Math.floor(time / 600) % 2 === 0;
 
-  const radius = Math.max(0.7, pitch * dpr * 0.32);
-  const glowRadius = radius * 3.2;
-
   if (maskData && lit) {
-    ctx.globalAlpha = settings.brightness / 100;
+    ctx.globalAlpha = brightness;
+
+    const radius = Math.max(0.7, pitch * dpr * 0.32);
+    const glowRadius = radius * 3.2;
 
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
@@ -870,8 +943,10 @@ function drawFrame(time) {
           sy = Math.floor((y + Math.floor(offset)) % maskHeight);
         }
 
-        if (sx < 0 || sy < 0 ||
-            sx >= maskWidth || sy >= maskHeight) continue;
+        if (
+          sx < 0 || sy < 0 ||
+          sx >= maskWidth || sy >= maskHeight
+        ) continue;
 
         if (!maskData[sy * maskWidth + sx]) continue;
 
@@ -886,8 +961,8 @@ function drawFrame(time) {
             px, py, glowRadius
           );
 
-          gradient.addColorStop(0, settings.color + 'aa');
-          gradient.addColorStop(1, settings.color + '00');
+          gradient.addColorStop(0, color + 'aa');
+          gradient.addColorStop(1, color + '00');
 
           ctx.fillStyle = gradient;
           ctx.beginPath();
@@ -895,7 +970,7 @@ function drawFrame(time) {
           ctx.fill();
         }
 
-        ctx.fillStyle = settings.color;
+        ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(px, py, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -911,10 +986,12 @@ function drawFrame(time) {
 
 function toast(message) {
   const element = $('toast');
+
   element.textContent = message;
   element.classList.add('show');
 
   clearTimeout(toastTimer);
+
   toastTimer = setTimeout(() => {
     element.classList.remove('show');
   }, 2500);
@@ -922,6 +999,7 @@ function toast(message) {
 
 function poke() {
   document.body.classList.remove('idle');
+
   clearTimeout(hideTimer);
 
   if (!$('panel').classList.contains('open')) {
@@ -938,10 +1016,11 @@ function openPanel(open) {
 
 function updateUI() {
   $('message').value = settings.message;
-  $('speed').value = settings.speed;
-  $('size').value = settings.size;
-  $('dot').value = settings.dot;
-  $('brightness').value = settings.brightness;
+  $('message').placeholder = t('placeholder');
+
+  ['speed', 'size', 'dot', 'brightness'].forEach(key => {
+    $(key).value = settings[key];
+  });
 
   $('speedValue').textContent = settings.speed;
   $('sizeValue').textContent = settings.size + '%';
@@ -952,11 +1031,17 @@ function updateUI() {
   $('mirror').checked = settings.mirror;
   $('glow').checked = settings.glow;
 
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.dataset.i18n;
+    element.textContent = t(key);
+  });
+
   document.querySelectorAll('[data-mode]').forEach(button => {
     button.classList.toggle(
       'active',
       button.dataset.mode === settings.mode
     );
+
     button.textContent = t(button.dataset.mode);
   });
 
@@ -972,70 +1057,56 @@ function updateUI() {
   $('languageBtn').textContent = t('language');
   $('editBtn').textContent = t('edit');
   $('showBtn').textContent = t('show');
-  $('fullBtn').textContent = t('fullscreen');
-  $('fullBtn2').textContent = t('fullscreen');
-  $('installBtn').textContent = t('install');
 
-  $('message').placeholder = t('placeholder');
-
-  $('message').previousElementSibling.textContent = t('message');
-
-  const fields = $('panel').querySelectorAll('.field > .label');
-  const labels = ['effect', 'color'];
-
-  fields.forEach((element, index) => {
-    if (labels[index]) element.textContent = t(labels[index]);
-  });
-
-  const rangeLabels = $('panel').querySelectorAll('.field > label');
-  const rangeKeys = ['speed', 'size', 'dot', 'brightness'];
-
-  rangeLabels.forEach((element, index) => {
-    if (rangeKeys[index]) element.textContent = t(rangeKeys[index]);
-  });
-
-  $('rotate').parentElement.lastChild.textContent = ' ' + t('rotate');
-  $('mirror').parentElement.lastChild.textContent = ' ' + t('mirror');
-  $('glow').parentElement.lastChild.textContent = ' ' + t('glow');
-
-  const isFullscreen = !!(
+  const fullscreen = !!(
     document.fullscreenElement ||
     document.webkitFullscreenElement
   );
 
-  $('fullBtn').textContent = isFullscreen ? t('exit') : t('fullscreen');
-  $('fullBtn2').textContent = isFullscreen ? t('exit') : t('fullscreen');
+  $('fullBtn').textContent = fullscreen ? t('exit') : t('fullscreen');
+  $('fullBtn2').textContent = fullscreen ? t('exit') : t('fullscreen');
+  $('installBtn').textContent = t('install');
 }
 
 function change(key, value, rebuild = false) {
   settings[key] = value;
+
   save();
+
   if (rebuild) queueRebuild();
+
   updateUI();
 }
 
+// MESSAGE
 $('message').addEventListener('input', event => {
   change('message', event.target.value, true);
 });
 
+// ANIMATION
 document.querySelectorAll('[data-mode]').forEach(button => {
   button.addEventListener('click', () => {
     change('mode', button.dataset.mode, true);
   });
 });
 
+// SLIDERS
 ['speed', 'size', 'dot', 'brightness'].forEach(key => {
   $(key).addEventListener('input', event => {
     settings[key] = Number(event.target.value);
 
-    if (key === 'dot') layout();
-    else if (key === 'size') queueRebuild();
+    if (key === 'dot') {
+      layout();
+    } else if (key === 'size') {
+      queueRebuild();
+    }
 
     save();
     updateUI();
   });
 });
 
+// CHECKBOXES
 $('rotate').addEventListener('change', event => {
   change('rotate', event.target.checked);
   layout();
@@ -1049,8 +1120,10 @@ $('glow').addEventListener('change', event => {
   change('glow', event.target.checked);
 });
 
+// COLORS
 $('colors').addEventListener('click', event => {
   const button = event.target.closest('[data-color]');
+
   if (!button) return;
 
   change('color', button.dataset.color);
@@ -1060,33 +1133,28 @@ $('customColor').addEventListener('input', event => {
   change('color', event.target.value);
 });
 
+// LANGUAGE
 $('languageBtn').addEventListener('click', () => {
   settings.lang = settings.lang === 'my' ? 'en' : 'my';
+
   save();
   updateUI();
 });
 
+// PANEL
 $('editBtn').addEventListener('click', () => {
   openPanel(!$('panel').classList.contains('open'));
 });
 
 $('showBtn').addEventListener('click', () => {
   openPanel(false);
-  poke();
 });
 
-canvas.addEventListener('pointerdown', () => {
-  requestWakeLock();
-  poke();
-
-  if ($('panel').classList.contains('open')) {
-    openPanel(false);
-  }
-});
-
+// FULLSCREEN
 async function toggleFullscreen() {
-  const current = document.fullscreenElement ||
-                  document.webkitFullscreenElement;
+  const current =
+    document.fullscreenElement ||
+    document.webkitFullscreenElement;
 
   try {
     if (current) {
@@ -1095,13 +1163,15 @@ async function toggleFullscreen() {
       } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
       }
+
       return;
     }
 
     openPanel(false);
 
-    const request = document.documentElement.requestFullscreen ||
-                    document.documentElement.webkitRequestFullscreen;
+    const request =
+      document.documentElement.requestFullscreen ||
+      document.documentElement.webkitRequestFullscreen;
 
     if (!request) {
       toast(t('unavailable'));
@@ -1118,20 +1188,22 @@ async function toggleFullscreen() {
 $('fullBtn').addEventListener('click', toggleFullscreen);
 $('fullBtn2').addEventListener('click', toggleFullscreen);
 
-document.addEventListener('fullscreenchange', () => {
+function fullscreenChanged() {
   layout();
   updateUI();
   poke();
-});
+}
 
-document.addEventListener('webkitfullscreenchange', () => {
-  layout();
-  updateUI();
-  poke();
-});
+document.addEventListener('fullscreenchange', fullscreenChanged);
+document.addEventListener('webkitfullscreenchange', fullscreenChanged);
 
+// WAKE LOCK
 async function requestWakeLock() {
-  if (!('wakeLock' in navigator) || document.hidden || wakeLock) return;
+  if (
+    !('wakeLock' in navigator) ||
+    document.hidden ||
+    wakeLock
+  ) return;
 
   try {
     wakeLock = await navigator.wakeLock.request('screen');
@@ -1149,10 +1221,43 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) requestWakeLock();
 });
 
-let resizeTimer;
+canvas.addEventListener('pointerdown', () => {
+  requestWakeLock();
+  poke();
 
+  if ($('panel').classList.contains('open')) {
+    openPanel(false);
+  }
+});
+
+// PWA INSTALL
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+
+  installPrompt = event;
+  $('installBtn').hidden = false;
+});
+
+$('installBtn').addEventListener('click', async () => {
+  if (!installPrompt) return;
+
+  installPrompt.prompt();
+
+  await installPrompt.userChoice;
+
+  installPrompt = null;
+  $('installBtn').hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  $('installBtn').hidden = true;
+  toast('App installed successfully');
+});
+
+// RESIZE
 function resize() {
   clearTimeout(resizeTimer);
+
   resizeTimer = setTimeout(() => {
     layout();
   }, 80);
@@ -1165,29 +1270,12 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', resize);
 }
 
-window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault();
-  installPrompt = event;
-  $('installBtn').hidden = false;
-});
-
-$('installBtn').addEventListener('click', async () => {
-  if (!installPrompt) return;
-
-  installPrompt.prompt();
-  await installPrompt.userChoice;
-
-  installPrompt = null;
-  $('installBtn').hidden = true;
-});
-
-window.addEventListener('appinstalled', () => {
-  $('installBtn').hidden = true;
-  toast('App installed successfully');
-});
-
+// SERVICE WORKER
 async function initializePWA() {
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  if (
+    'serviceWorker' in navigator &&
+    location.protocol !== 'file:'
+  ) {
     try {
       await navigator.serviceWorker.register('./sw.js');
     } catch (error) {
@@ -1196,9 +1284,11 @@ async function initializePWA() {
   }
 }
 
+// INITIALIZATION
 async function initialize() {
   updateUI();
   layout();
+
   requestWakeLock();
 
   if (document.fonts && document.fonts.ready) {
