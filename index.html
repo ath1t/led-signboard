@@ -19,9 +19,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .bar{position:fixed;z-index:5;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;transition:opacity .22s ease}
 body.idle .bar{opacity:0;pointer-events:none}
 .pill{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:rgba(21,23,27,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-#toast{position:fixed;z-index:20;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:rgba(15,17,20,.9);border:1px solid var(--line);color:var(--text);font-size:14px;opacity:0;transition:opacity .2s ease, transform .2s ease;pointer-events:none}
+#toast{position:fixed;z-index:20;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:rgba(15,17,20,.96);border:1px solid var(--line);color:var(--text);font-size:14px;opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none}
 #toast.on{opacity:1;transform:translate(-50%,0)}
-#panel{position:fixed;z-index:10;left:0;right:0;bottom:0;margin:0 auto;max-width:min(92vw,560px);width:min(92vw,560px);max-height:min(82vh,560px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(calc(100% + 10px));transition:transform .24s ease, opacity .24s ease;box-shadow:0 -18px 60px rgba(0,0,0,.45)}
+#panel{position:fixed;z-index:10;left:0;right:0;bottom:0;margin:0 auto;max-width:min(92vw,560px);width:min(92vw,560px);max-height:min(82vh,560px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(calc(100% + 12px));transition:transform .24s ease,opacity .24s ease;box-shadow:0 -18px 60px rgba(0,0,0,.45)}
 #panel.open{transform:none}
 .grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
 .f{display:block;margin:0 0 14px}
@@ -98,15 +98,15 @@ var S={lang:'my',text:'ကြိုဆိုပါတယ်! စာသားပ�
 try{Object.assign(S,JSON.parse(localStorage.getItem('ledsign')||'{}'))}catch(e){}
 function save(){try{localStorage.setItem('ledsign',JSON.stringify(S))}catch(e){}}
 var T={
-  my:{title:'LED ဆိုင်းဘုတ်',def:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',edit:'ပြင်ရန်',fs:'စခရင်',xfs:'စခရင်မှ ထွက်ရန်',message:'စာသား',ph:'စာသား ရေးပါ',effect:'အရာသွားပုံ',left:'ဘယ်ဘက်သို့',right:'ညာဘက်သို့',still:'မရွေ့',blink:'စက်ဝိုင်း',speed:'အမြန်နှုန်း',size:'စာလုံးအရွယ်',dot:'အမှတ်အရွယ်',color:'အရောင်',rot:'အလျားလိုက် စံနစ် (ဖုန်းကို ညာဘက်သို့ ထောင်)',mir:'စာသားကို ပုံနှိမ်',done:'ပြသရန်',lang:'English',nofs:'ဖန်သားပြင်မရနိုင်ပါ'},
+  my:{title:'LED ဆိုင်းဘုတ်',def:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',edit:'ပြင်ရန်',fs:'စခရင်အပြည့်',xfs:'စခရင်အပြည့်မှ ထွက်မည်',message:'စာသား',ph:'သင့်စာသားကို ရေးပါ',effect:'အကျိုးသက်ရောက်မှု',left:'ဘယ်ဘက်သို့.Scroll',right:'ညာဘက်သို့.Scroll',still:'ရပ်နေ',blink:' blink',speed:'Scroll speed',size:'စာသားအရွယ်',dot:'အမှတ်အရွယ်',color:'အရောင်',rot:'တည်ငြိမ်အနေအထား',mir:'Mirror text',done:'သင့်အချက်ပြ',lang:'English',nofs:'ဤစက်ပစ္စည်းတွင် စခရင်အပြည့်အသုံးမပြုနိုင်ပါ'},
   en:{title:'LED Sign Board',def:'WELCOME! TAP THE SCREEN TO EDIT',edit:'Edit',fs:'Full screen',xfs:'Exit full screen',message:'Message',ph:'Type your message',effect:'Effect',left:'Scroll left',right:'Scroll right',still:'Still',blink:'Blink',speed:'Scroll speed',size:'Text size',dot:'Dot size',color:'Colour',rot:'Turn sign sideways (hold phone upright)',mir:'Mirror text',done:'Show sign',lang:'မြန်မာ',nofs:'Full screen is not available on this device'}
 };
 if(!T[S.lang])S.lang='my';
 if(S.text===T.en.def)S.text=T[S.lang].def;
-function tr(k){return T[S.lang][k]}
+function tr(k){return (T[S.lang] && T[S.lang][k]) || (T.en && T.en[k]) || ''}
 var COLORS=['#ffb000','#ff2a2a','#22ff66','#22d3ff','#ff4fd8','#f4f4ff'];
 var FONT='"Arial Black","Helvetica Neue",Arial,"Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,sans-serif';
-var cv=$('cv'),ctx=cv.getContext('2d');
+var cv=$('cv'),ctx=cv&&cv.getContext&&cv.getContext('2d');
 var W,H,dpr,cols,rows,pitch,ox,oy,sprite,grid,msk,mw=1,period=1,off=0,last=0;
 
 function hexA(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'}
@@ -115,6 +115,7 @@ function getViewport(){
   return {w: vp ? vp.width : window.innerWidth, h: vp ? vp.height : window.innerHeight};
 }
 function layout(){
+  if(!cv || !ctx)return;
   dpr=Math.min(window.devicePixelRatio||1,2);
   var v=getViewport();
   W=S.rot?v.h:v.w;
@@ -135,6 +136,7 @@ function layout(){
 }
 
 function restyle(){
+  if(!cv || !ctx)return;
   var pd=pitch*dpr,g=Math.ceil(pd*2.6),c=document.createElement('canvas');
   c.width=c.height=g;
   var x=c.getContext('2d'),m=g/2,r=pd*0.4;
@@ -172,8 +174,8 @@ function wrapLines(x,ls,mw){
   return out.filter(function(l){return l});
 }
 function rebuild(){
-  if(!cols)return;
-  var raw=S.text.replace(/\r/g,''),c,x,fs;
+  if(!cols || !ctx)return;
+  var raw=(S.text||'').replace(/\r/g,''),c,x,fs;
   var lines=raw.split('\n').map(function(s){return s.trim()}).filter(Boolean);
   if(!lines.length)lines=[' '];
   var k=/[\u1000-\u109F]/.test(raw)?0.78:1;
@@ -210,6 +212,7 @@ function rebuild(){
 }
 
 function frame(t){
+  if(!cv || !ctx)return;
   var dt=Math.min(.1,(t-last)/1000||0);last=t;
   var scroll=S.mode==='left'||S.mode==='right';
   if(scroll){off+=(S.mode==='left'?1:-1)*S.speed*dt;off=((off%period)+period)%period}
@@ -217,7 +220,7 @@ function frame(t){
   ctx.globalCompositeOperation='source-over';
   ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height);
   if(grid)ctx.drawImage(grid,0,0);
-  var lit=S.mode!=='blink'||Math.floor(t/600)%2===0;
+  var lit=S.mode !== 'blink' || Math.floor(t/600)%2===0;
   if(lit&&msk&&sprite){
     ctx.globalCompositeOperation='lighter';
     var hf=sprite.width/2,base=Math.floor(off);
@@ -254,16 +257,16 @@ cp.oninput=function(){S.color=cp.value;sync();restyle();save()};sw.appendChild(c
 
 function apply(){
   document.documentElement.lang=S.lang;document.title=tr('title');
-  document.querySelectorAll('[data-t]').forEach(function(e){e.textContent=tr(e.dataset.t)});
+  document.querySelectorAll('[data-t]').forEach(function(e){var key=e.dataset.t; e.textContent=tr(key) || e.textContent;});
   $('edit').textContent=tr('edit');$('done').textContent=tr('done');$('lang').textContent=tr('lang');$('txt').placeholder=tr('ph');
   var f=fsEl()?'xfs':'fs';$('fs').textContent=tr(f);$('fs2').textContent=tr(f);
 }
 function sync(){
   apply();
   $('txt').value=S.text;$('speed').value=S.speed;$('size').value=S.size;$('dot').value=S.dot;
-  $('rot').checked=S.rot;$('mir').checked=S.mir;cp.value=S.color;
-  document.querySelectorAll('#mode button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===S.mode)});
-  sw.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.c===S.color)});
+  $('rot').checked=!!S.rot;$('mir').checked=!!S.mir;cp.value=S.color;
+  document.querySelectorAll('#mode button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===S.mode))});
+  sw.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.c===S.color))});
 }
 $('txt').oninput=function(){S.text=this.value;rebuild();save()};
 document.querySelectorAll('#mode button').forEach(function(b){b.onclick=function(){S.mode=b.dataset.v;sync();rebuild();save()}});
@@ -289,14 +292,20 @@ function toggleFS(){
   if(!req){noFS();return}
   try{var p=req.call(root);if(p&&p.catch)p.catch(noFS)}catch(e){noFS()}
 }
-function noFS(){toast(tr('nofs'))}
+function noFS(){toast(tr('nofs')||'Full screen is not available on this device')}
 function fsLabel(){apply();layout();poke()}
 $('fs').onclick=toggleFS;$('fs2').onclick=toggleFS;
 document.addEventListener('fullscreenchange',fsLabel);
 document.addEventListener('webkitfullscreenchange',fsLabel);
 
 var wl=null;
-function lock(){try{if('wakeLock' in navigator&&!wl){navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})}}catch(e){}}
+function lock(){
+  try{
+    if('wakeLock' in navigator && !wl && navigator.wakeLock && navigator.wakeLock.request){
+      navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})
+    }
+  }catch(e){}
+}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)lock()});
 
 var rz;
@@ -306,7 +315,7 @@ window.addEventListener('orientationchange',onResize);
 if(window.visualViewport)window.visualViewport.addEventListener('resize',onResize);
 
 sync();layout();lock();poke();
-try{document.fonts.load('700 20px "Noto Sans Myanmar"','က').then(rebuild)}catch(e){}
+try{if(document.fonts&&document.fonts.load){document.fonts.load('700 20px "Noto Sans Myanmar"','က').then(rebuild).catch(function(){})}}catch(e){}
 requestAnimationFrame(frame);
 })();
 </script>
