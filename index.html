@@ -1,323 +1,1222 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#000000">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090c">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LED Sign">
 <meta name="mobile-web-app-capable" content="yes">
+
 <title>LED Sign Board</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/icon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700;900&display=swap" rel="stylesheet">
+
 <style>
-:root{color-scheme:dark;--panel:#15171b;--line:#2c3038;--text:#eef0f4;--mute:#9298a4;--acc:#ffb000}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:#000;color:var(--text);font:15px/1.6 "Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
-body{position:relative}
-canvas{position:fixed;inset:0;display:block;background:#000;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.bar{position:fixed;z-index:5;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));display:flex;gap:8px;transition:opacity .22s ease}
-body.idle .bar{opacity:0;pointer-events:none}
-.pill{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:rgba(21,23,27,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-#toast{position:fixed;z-index:20;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:rgba(15,17,20,.96);border:1px solid var(--line);color:var(--text);font-size:14px;opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none}
-#toast.on{opacity:1;transform:translate(-50%,0)}
-#panel{position:fixed;z-index:10;left:0;right:0;bottom:0;margin:0 auto;max-width:min(92vw,560px);width:min(92vw,560px);max-height:min(82vh,560px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(calc(100% + 12px));transition:transform .24s ease,opacity .24s ease;box-shadow:0 -18px 60px rgba(0,0,0,.45)}
-#panel.open{transform:none}
-.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
-.f{display:block;margin:0 0 14px}
-.f>span,.lbl{display:block;color:var(--mute);font-size:13px;margin-bottom:6px}
-textarea{width:100%;resize:none;background:#0d0e11;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;-webkit-user-select:text;user-select:text;min-height:82px}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.seg button{min-height:42px;border-radius:10px;border:1px solid var(--line);background:#0d0e11;font-size:14px;padding:6px 4px;line-height:1.4}
-.seg button[aria-pressed=true]{border-color:var(--acc);color:var(--acc);background:#1d1a10}
-input[type=range]{width:100%;height:32px;accent-color:var(--acc)}
-.sw{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.sw button{width:40px;height:40px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px var(--line);padding:0;background:transparent}
-.sw button[aria-pressed=true]{border-color:#fff}
-.sw input{width:44px;height:40px;border:0;background:none;padding:0}
-.chk{display:flex;align-items:center;gap:10px;min-height:40px;margin:0 0 4px}
-.chk input{width:22px;height:22px;accent-color:var(--acc)}
-.go{display:flex;gap:8px;margin-top:10px}
-.go button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line);background:#0d0e11}
-.go .main{background:var(--acc);color:#1a1200;border-color:var(--acc);font-weight:700}
-.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}.lang{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent}
-@media (max-width:460px){
-  .bar{gap:6px;right:calc(8px + env(safe-area-inset-right,0px));top:calc(8px + env(safe-area-inset-top,0px))}
-  .pill{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px}
-  textarea{font-size:15px;min-height:74px}
-  .seg{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .seg button{font-size:13px;padding:8px 6px}
-  .sw{gap:8px}
-  .sw button{width:36px;height:36px}
-  .sw input{width:40px;height:36px}
-  .go button{min-height:46px}
-  .foot{font-size:12px}
-  .lang{min-height:32px;padding:0 10px}
+:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --panel: #15171d;
+  --surface: #0d0f14;
+  --line: #292d37;
+  --text: #f4f5f8;
+  --muted: #9299a8;
+  --accent: #ffb000;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  color: var(--text);
+  font-family: "Noto Sans Myanmar", "Myanmar Text",
+    Padauk, system-ui, sans-serif;
+  overscroll-behavior: none;
+}
+
+body {
+  touch-action: manipulation;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+#screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+#display {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  background: #000;
+  transform-origin: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.topbar {
+  position: fixed;
+  z-index: 5;
+  top: calc(12px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  display: flex;
+  gap: 8px;
+  transition: opacity .2s;
+}
+
+body.idle .topbar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pill {
+  min-height: 44px;
+  padding: 0 17px;
+  border: 1px solid #343944;
+  border-radius: 30px;
+  background: rgba(22,24,30,.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+#panel {
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  bottom: 0;
+  width: min(94vw, 560px);
+  max-height: 86dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 16px calc(20px + env(safe-area-inset-bottom));
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+  background: var(--panel);
+  box-shadow: 0 -15px 55px #0009;
+  transform: translate(-50%, 110%);
+  transition: transform .25s ease;
+}
+
+#panel.open {
+  transform: translate(-50%, 0);
+}
+
+.grip {
+  width: 42px;
+  height: 4px;
+  margin: 0 auto 16px;
+  border-radius: 10px;
+  background: #444956;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.heading small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field > label,
+.field > .label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 85px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.segment {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.segment button {
+  min-height: 42px;
+  padding: 8px 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 13px;
+}
+
+.segment button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: #ffb00012;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.range-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.color {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--color);
+  box-shadow: 0 0 0 1px #555;
+}
+
+.color.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--color);
+}
+
+#customColor {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.checks {
+  display: grid;
+  gap: 10px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+.check input {
+  width: 19px;
+  height: 19px;
+  accent-color: var(--accent);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.actions button {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.actions .primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #171000;
+  font-weight: 800;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 17px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer button {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: transparent;
+}
+
+#toast {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  max-width: 90vw;
+  padding: 11px 17px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #191b21;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 15px);
+  transition: .2s;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 420px) {
+  #panel {
+    width: 100%;
+    max-height: 88dvh;
+  }
+
+  .segment button {
+    font-size: 12px;
+  }
+
+  .pill {
+    min-height: 40px;
+    padding: 0 13px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel, #toast, .topbar {
+    transition-duration: .01ms;
+  }
 }
 </style>
 </head>
+
 <body>
-<canvas id="cv"></canvas>
 
-<div class="bar" id="bar">
-  <button class="pill" id="edit">Edit</button>
-  <button class="pill" id="fs">Full screen</button>
+<div id="screen">
+  <canvas id="display"></canvas>
 </div>
-<div id="toast" role="status"></div>
 
-<section id="panel" aria-label="Sign settings">
+<div class="topbar">
+  <button class="pill" id="editBtn">Edit</button>
+  <button class="pill" id="fullBtn">Full screen</button>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<section id="panel">
   <div class="grip"></div>
-  <label class="f"><span data-t="message">Message</span><textarea id="txt" rows="3" maxlength="300" placeholder="Type your message"></textarea></label>
-  <div class="f"><span data-t="effect">Effect</span>
-    <div class="seg" id="mode">
-      <button data-v="left" data-t="left">Scroll left</button>
-      <button data-v="right" data-t="right">Scroll right</button>
-      <button data-v="still" data-t="still">Still</button>
-      <button data-v="blink" data-t="blink">Blink</button>
+
+  <div class="heading">
+    <h2>LED Sign Board</h2>
+    <small>VERSION 2.0</small>
+  </div>
+
+  <div class="field">
+    <label for="message">Your message</label>
+    <textarea id="message" maxlength="300"
+      placeholder="Type your message..."></textarea>
+  </div>
+
+  <div class="field">
+    <span class="label">Animation effect</span>
+    <div class="segment" id="effects">
+      <button data-mode="left">← Left</button>
+      <button data-mode="right">Right →</button>
+      <button data-mode="up">↑ Up</button>
+      <button data-mode="down">↓ Down</button>
+      <button data-mode="still">Still</button>
+      <button data-mode="blink">Blink</button>
     </div>
   </div>
-  <label class="f"><span data-t="speed">Scroll speed</span><input type="range" id="speed" min="5" max="120"></label>
-  <label class="f"><span data-t="size">Text size</span><input type="range" id="size" min="30" max="100"></label>
-  <label class="f"><span data-t="dot">Dot size</span><input type="range" id="dot" min="5" max="22"></label>
-  <div class="f"><span data-t="color">Colour</span>
-    <div class="sw" id="sw"></div>
+
+  <div class="field">
+    <label for="speed">Animation speed</label>
+    <input type="range" id="speed" min="5" max="150" value="40">
+    <div class="range-info">
+      <span>Slow</span><span id="speedValue">40</span><span>Fast</span>
+    </div>
   </div>
-  <label class="chk"><input type="checkbox" id="rot"> <span data-t="rot">Turn sign sideways (hold phone upright)</span></label>
-  <label class="chk"><input type="checkbox" id="mir"> <span data-t="mir">Mirror text</span></label>
-  <div class="go">
-    <button id="fs2">Full screen</button>
-    <button class="main" id="done">Show sign</button>
+
+  <div class="field">
+    <label for="size">Text size</label>
+    <input type="range" id="size" min="30" max="100" value="72">
+    <div class="range-info">
+      <span>Small</span><span id="sizeValue">72%</span><span>Large</span>
+    </div>
   </div>
-  <div class="foot"><button class="lang" id="lang" type="button">English</button><span>Vibe Coded By Thio</span></div>
+
+  <div class="field">
+    <label for="dot">LED dot size</label>
+    <input type="range" id="dot" min="4" max="24" value="10">
+    <div class="range-info">
+      <span>Fine</span><span id="dotValue">10 px</span><span>Large</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="brightness">Brightness</label>
+    <input type="range" id="brightness" min="10" max="100" value="100">
+    <div class="range-info">
+      <span>Dim</span><span id="brightnessValue">100%</span><span>Bright</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <span class="label">LED colour</span>
+    <div class="colors" id="colors">
+      <button class="color" style="--color:#ffb000" data-color="#ffb000" aria-label="Amber"></button>
+      <button class="color" style="--color:#ff2525" data-color="#ff2525" aria-label="Red"></button>
+      <button class="color" style="--color:#22ff66" data-color="#22ff66" aria-label="Green"></button>
+      <button class="color" style="--color:#22d3ff" data-color="#22d3ff" aria-label="Blue"></button>
+      <button class="color" style="--color:#ff4fd8" data-color="#ff4fd8" aria-label="Pink"></button>
+      <button class="color" style="--color:#ffffff" data-color="#ffffff" aria-label="White"></button>
+      <input type="color" id="customColor" value="#ffb000" aria-label="Custom colour">
+    </div>
+  </div>
+
+  <div class="field checks">
+    <label class="check">
+      <input type="checkbox" id="rotate">
+      Rotate display 90°
+    </label>
+    <label class="check">
+      <input type="checkbox" id="mirror">
+      Mirror text
+    </label>
+    <label class="check">
+      <input type="checkbox" id="glow" checked>
+      LED glow effect
+    </label>
+  </div>
+
+  <div class="actions">
+    <button id="installBtn" hidden>Install app</button>
+    <button id="fullBtn2">Full screen</button>
+    <button class="primary" id="showBtn">Show sign</button>
+  </div>
+
+  <div class="footer">
+    <button id="languageBtn">မြန်မာ</button>
+    <span>Vibe Coded By Thio</span>
+  </div>
 </section>
 
 <script>
-(function(){
-var $=function(i){return document.getElementById(i)};
-var S={lang:'my',text:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',mode:'left',speed:40,size:72,dot:10,color:'#ffb000',rot:false,mir:false};
-try{Object.assign(S,JSON.parse(localStorage.getItem('ledsign')||'{}'))}catch(e){}
-function save(){try{localStorage.setItem('ledsign',JSON.stringify(S))}catch(e){}}
-var T={
-  my:{title:'LED ဆိုင်းဘုတ်',def:'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',edit:'ပြင်ရန်',fs:'စခရင်အပြည့်',xfs:'စခရင်အပြည့်မှ ထွက်မည်',message:'စာသား',ph:'သင့်စာသားကို ရေးပါ',effect:'အကျိုးသက်ရောက်မှု',left:'ဘယ်ဘက်သို့.Scroll',right:'ညာဘက်သို့.Scroll',still:'ရပ်နေ',blink:' blink',speed:'Scroll speed',size:'စာသားအရွယ်',dot:'အမှတ်အရွယ်',color:'အရောင်',rot:'တည်ငြိမ်အနေအထား',mir:'Mirror text',done:'သင့်အချက်ပြ',lang:'English',nofs:'ဤစက်ပစ္စည်းတွင် စခရင်အပြည့်အသုံးမပြုနိုင်ပါ'},
-  en:{title:'LED Sign Board',def:'WELCOME! TAP THE SCREEN TO EDIT',edit:'Edit',fs:'Full screen',xfs:'Exit full screen',message:'Message',ph:'Type your message',effect:'Effect',left:'Scroll left',right:'Scroll right',still:'Still',blink:'Blink',speed:'Scroll speed',size:'Text size',dot:'Dot size',color:'Colour',rot:'Turn sign sideways (hold phone upright)',mir:'Mirror text',done:'Show sign',lang:'မြန်မာ',nofs:'Full screen is not available on this device'}
+(() => {
+'use strict';
+
+const $ = id => document.getElementById(id);
+const canvas = $('display');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+const DEFAULTS = {
+  message: 'ကြိုဆိုပါတယ်! စာသားပြင်ရန် စခရင်ကို နှိပ်ပါ',
+  mode: 'left',
+  speed: 40,
+  size: 72,
+  dot: 10,
+  brightness: 100,
+  color: '#ffb000',
+  rotate: false,
+  mirror: false,
+  glow: true,
+  lang: 'my'
 };
-if(!T[S.lang])S.lang='my';
-if(S.text===T.en.def)S.text=T[S.lang].def;
-function tr(k){return (T[S.lang] && T[S.lang][k]) || (T.en && T.en[k]) || ''}
-var COLORS=['#ffb000','#ff2a2a','#22ff66','#22d3ff','#ff4fd8','#f4f4ff'];
-var FONT='"Arial Black","Helvetica Neue",Arial,"Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,sans-serif';
-var cv=$('cv'),ctx=cv&&cv.getContext&&cv.getContext('2d');
-var W,H,dpr,cols,rows,pitch,ox,oy,sprite,grid,msk,mw=1,period=1,off=0,last=0;
 
-function hexA(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'}
-function getViewport(){
-  var vp=window.visualViewport;
-  return {w: vp ? vp.width : window.innerWidth, h: vp ? vp.height : window.innerHeight};
-}
-function layout(){
-  if(!cv || !ctx)return;
-  dpr=Math.min(window.devicePixelRatio||1,2);
-  var v=getViewport();
-  W=S.rot?v.h:v.w;
-  H=S.rot?v.w:v.h;
-  cv.width=Math.round(W*dpr);
-  cv.height=Math.round(H*dpr);
-  cv.style.width=W+'px';
-  cv.style.height=H+'px';
-  cv.style.transformOrigin='center center';
-  cv.style.transform=S.rot ? 'rotate(90deg)' : 'none';
-  pitch=S.dot;
-  cols=Math.max(1,Math.floor(W/pitch));
-  rows=Math.max(1,Math.floor(H/pitch));
-  ox=(W-cols*pitch)/2;
-  oy=(H-rows*pitch)/2;
-  restyle();
-  rebuild();
-}
+let settings = { ...DEFAULTS };
 
-function restyle(){
-  if(!cv || !ctx)return;
-  var pd=pitch*dpr,g=Math.ceil(pd*2.6),c=document.createElement('canvas');
-  c.width=c.height=g;
-  var x=c.getContext('2d'),m=g/2,r=pd*0.4;
-  var gr=x.createRadialGradient(m,m,r*0.5,m,m,g/2);
-  gr.addColorStop(0,hexA(S.color,.4));gr.addColorStop(1,hexA(S.color,0));
-  x.fillStyle=gr;x.fillRect(0,0,g,g);
-  x.fillStyle=S.color;x.beginPath();x.arc(m,m,r,0,7);x.fill();
-  x.fillStyle='rgba(255,255,255,.4)';x.beginPath();x.arc(m,m,r*.45,0,7);x.fill();
-  sprite=c;
-  grid=document.createElement('canvas');grid.width=cv.width;grid.height=cv.height;
-  var gx=grid.getContext('2d'),dr=pd*0.34;
-  gx.fillStyle=hexA(S.color,.1);gx.beginPath();
-  for(var j=0;j<rows;j++)for(var i=0;i<cols;i++){
-    var px=(ox+(i+.5)*pitch)*dpr,py=(oy+(j+.5)*pitch)*dpr;
-    gx.moveTo(px+dr,py);gx.arc(px,py,dr,0,7);
+try {
+  const stored = JSON.parse(localStorage.getItem('ledsign-v2') || '{}');
+  if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+    settings = { ...settings, ...stored };
   }
-  gx.fill();
+} catch (error) {
+  console.warn('Settings could not be loaded.', error);
 }
 
-function tok(p){
-  try{if(window.Intl&&Intl.Segmenter&&/[\u1000-\u109F]/.test(p))return Array.from(new Intl.Segmenter('my',{granularity:'word'}).segment(p),function(g){return g.segment})}catch(e){}
-  return p.split(/(\s+)/).filter(Boolean);
+const modes = ['left', 'right', 'up', 'down', 'still', 'blink'];
+
+if (!modes.includes(settings.mode)) settings.mode = 'left';
+if (!['my', 'en'].includes(settings.lang)) settings.lang = 'my';
+
+settings.message = typeof settings.message === 'string'
+  ? settings.message.slice(0, 300) : DEFAULTS.message;
+
+for (const key of ['speed', 'size', 'dot', 'brightness']) {
+  const limits = {
+    speed: [5, 150],
+    size: [30, 100],
+    dot: [4, 24],
+    brightness: [10, 100]
+  };
+  settings[key] = Number(settings[key]);
+  if (!Number.isFinite(settings[key])) settings[key] = DEFAULTS[key];
+  settings[key] = Math.max(limits[key][0],
+    Math.min(limits[key][1], settings[key]));
 }
-function wrapLines(x,ls,mw){
-  var out=[];
-  ls.forEach(function(p){
-    var cur='';
-    tok(p).forEach(function(w){
-      var n=cur+w;
-      if(!cur.trim()||x.measureText(n.trim()).width<=mw)cur=n;
-      else{out.push(cur.trim());cur=w.trim()?w:''}
-    });
-    out.push(cur.trim());
-  });
-  return out.filter(function(l){return l});
+
+if (!/^#[0-9a-f]{6}$/i.test(settings.color)) {
+  settings.color = DEFAULTS.color;
 }
-function rebuild(){
-  if(!cols || !ctx)return;
-  var raw=(S.text||'').replace(/\r/g,''),c,x,fs;
-  var lines=raw.split('\n').map(function(s){return s.trim()}).filter(Boolean);
-  if(!lines.length)lines=[' '];
-  var k=/[\u1000-\u109F]/.test(raw)?0.78:1;
-  if(S.mode==='left'||S.mode==='right'){
-    var txt=lines.join('   ');
-    fs=Math.max(4,rows*S.size/100*k);
-    c=document.createElement('canvas');x=c.getContext('2d');
-    x.font='700 '+fs+'px '+FONT;
-    var w=Math.max(1,Math.ceil(x.measureText(txt).width)+2);
-    c.width=w;c.height=rows;
-    x.font='700 '+fs+'px '+FONT;x.fillStyle='#fff';x.textBaseline='middle';
-    x.fillText(txt,1,rows/2+fs*0.04);
-    mw=w;period=w+Math.round(cols*.4);
-  }else{
-    c=document.createElement('canvas');c.width=cols;c.height=rows;x=c.getContext('2d');
-    var lh=k<1?1.25:1,maxW=cols-2,out=[];
-    fs=rows*S.size/100*k;
-    for(var n=0;n<60;n++){
-      x.font='700 '+fs+'px '+FONT;
-      out=wrapLines(x,lines,maxW);
-      var wd=Math.max.apply(null,out.map(function(l){return x.measureText(l).width}));
-      if(out.length*fs*lh<=rows&&wd<=maxW)break;
-      fs*=0.93;if(fs<3)break;
+
+settings.rotate = settings.rotate === true;
+settings.mirror = settings.mirror === true;
+settings.glow = settings.glow !== false;
+
+const translations = {
+  en: {
+    edit: 'Edit',
+    fullscreen: 'Full screen',
+    exit: 'Exit full screen',
+    message: 'Your message',
+    placeholder: 'Type your message...',
+    effect: 'Animation effect',
+    left: '← Left',
+    right: 'Right →',
+    up: '↑ Up',
+    down: '↓ Down',
+    still: 'Still',
+    blink: 'Blink',
+    speed: 'Animation speed',
+    size: 'Text size',
+    dot: 'LED dot size',
+    brightness: 'Brightness',
+    color: 'LED colour',
+    rotate: 'Rotate display 90°',
+    mirror: 'Mirror text',
+    glow: 'LED glow effect',
+    show: 'Show sign',
+    language: 'မြန်မာ',
+    install: 'Install app',
+    unavailable: 'Fullscreen is unavailable.',
+    saved: 'Settings saved'
+  },
+  my: {
+    edit: 'ပြင်ရန်',
+    fullscreen: 'စခရင်အပြည့်',
+    exit: 'ပြန်ထွက်ရန်',
+    message: 'ပြသမည့်စာသား',
+    placeholder: 'စာသားရေးပါ...',
+    effect: 'ပြသမှုပုံစံ',
+    left: '← ဘယ်',
+    right: 'ညာ →',
+    up: '↑ အပေါ်',
+    down: '↓ အောက်',
+    still: 'ရပ်ထား',
+    blink: 'မှိတ်တုတ်',
+    speed: 'ရွေ့လျားနှုန်း',
+    size: 'စာသားအရွယ်',
+    dot: 'LED အစက်အရွယ်',
+    brightness: 'အလင်းအား',
+    color: 'LED အရောင်',
+    rotate: '၉၀ ဒီဂရီ လှည့်ရန်',
+    mirror: 'စာသားကို ပြောင်းပြန်ပြရန်',
+    glow: 'LED အလင်းဝန်းဖွင့်ရန်',
+    show: 'ပြသရန်',
+    language: 'English',
+    install: 'App ထည့်သွင်းရန်',
+    unavailable: 'စခရင်အပြည့် မရနိုင်ပါ။',
+    saved: 'သိမ်းဆည်းပြီးပါပြီ'
+  }
+};
+
+const t = key => translations[settings.lang][key] || key;
+
+let logicalWidth = 0;
+let logicalHeight = 0;
+let cols = 0;
+let rows = 0;
+let pitch = 10;
+let dpr = 1;
+let offset = 0;
+let lastTime = 0;
+let maskCanvas = null;
+let maskCtx = null;
+let maskWidth = 1;
+let maskHeight = 1;
+let maskData = null;
+let animationId = 0;
+let rebuildQueued = false;
+let wakeLock = null;
+let hideTimer = null;
+let toastTimer = null;
+let installPrompt = null;
+
+function save() {
+  try {
+    localStorage.setItem('ledsign-v2', JSON.stringify(settings));
+  } catch (error) {
+    console.warn('Settings could not be saved.', error);
+  }
+}
+
+function viewport() {
+  const v = window.visualViewport;
+  return {
+    width: v ? v.width : window.innerWidth,
+    height: v ? v.height : window.innerHeight
+  };
+}
+
+function layout() {
+  const v = viewport();
+
+  logicalWidth = settings.rotate ? v.height : v.width;
+  logicalHeight = settings.rotate ? v.width : v.height;
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.max(1, Math.round(logicalWidth * dpr));
+  canvas.height = Math.max(1, Math.round(logicalHeight * dpr));
+
+  canvas.style.width = logicalWidth + 'px';
+  canvas.style.height = logicalHeight + 'px';
+  canvas.style.transform = settings.rotate
+    ? 'translate(-50%, -50%) rotate(90deg)'
+    : 'translate(-50%, -50%)';
+
+  pitch = settings.dot;
+  cols = Math.max(1, Math.floor(logicalWidth / pitch));
+  rows = Math.max(1, Math.floor(logicalHeight / pitch));
+
+  buildMask();
+}
+
+function fontFamily() {
+  return '"Noto Sans Myanmar","Myanmar Text",Padauk,Arial,sans-serif';
+}
+
+function splitText(text) {
+  if (window.Intl && Intl.Segmenter) {
+    const segmenter = new Intl.Segmenter(
+      settings.lang === 'my' ? 'my' : 'en',
+      { granularity: 'grapheme' }
+    );
+    return Array.from(segmenter.segment(text), x => x.segment);
+  }
+
+  return Array.from(text);
+}
+
+function wrapText(text, maxWidth, fontSize) {
+  maskCtx.font = '900 ' + fontSize + 'px ' + fontFamily();
+
+  const paragraphs = text.replace(/\r/g, '').split('\n');
+  const lines = [];
+
+  for (const paragraph of paragraphs) {
+    if (!paragraph.trim()) {
+      lines.push('');
+      continue;
     }
-    x.font='700 '+fs+'px '+FONT;x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';
-    var y0=(rows-out.length*fs*lh)/2;
-    out.forEach(function(l,i){x.fillText(l,cols/2,y0+(i+.5)*fs*lh+fs*0.04)});
-    mw=cols;period=cols;
-  }
-  var d=x.getImageData(0,0,c.width,c.height).data;
-  msk=new Uint8Array(c.width*c.height);
-  for(var i=0;i<msk.length;i++)msk[i]=d[i*4+3]>100?1:0;
-  off=0;
-}
 
-function frame(t){
-  if(!cv || !ctx)return;
-  var dt=Math.min(.1,(t-last)/1000||0);last=t;
-  var scroll=S.mode==='left'||S.mode==='right';
-  if(scroll){off+=(S.mode==='left'?1:-1)*S.speed*dt;off=((off%period)+period)%period}
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.globalCompositeOperation='source-over';
-  ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height);
-  if(grid)ctx.drawImage(grid,0,0);
-  var lit=S.mode !== 'blink' || Math.floor(t/600)%2===0;
-  if(lit&&msk&&sprite){
-    ctx.globalCompositeOperation='lighter';
-    var hf=sprite.width/2,base=Math.floor(off);
-    for(var c=0;c<cols;c++){
-      var sc=scroll?(base+c)%period:c;
-      if(sc>=mw)continue;
-      var dc=S.mir?cols-1-c:c;
-      var px=Math.round((ox+(dc+.5)*pitch)*dpr-hf);
-      for(var r=0;r<rows;r++){
-        if(msk[r*mw+sc])ctx.drawImage(sprite,px,Math.round((oy+(r+.5)*pitch)*dpr-hf));
+    const words = paragraph.trim().split(/\s+/);
+    let line = '';
+
+    for (const word of words) {
+      const candidate = line ? line + ' ' + word : word;
+
+      if (maskCtx.measureText(candidate).width <= maxWidth) {
+        line = candidate;
+      } else {
+        if (line) lines.push(line);
+
+        if (maskCtx.measureText(word).width > maxWidth) {
+          let part = '';
+
+          for (const char of splitText(word)) {
+            const next = part + char;
+
+            if (part && maskCtx.measureText(next).width > maxWidth) {
+              lines.push(part);
+              part = char;
+            } else {
+              part = next;
+            }
+          }
+
+          line = part;
+        } else {
+          line = word;
+        }
       }
     }
-    ctx.globalCompositeOperation='source-over';
+
+    if (line) lines.push(line);
   }
-  requestAnimationFrame(frame);
+
+  return lines.length ? lines : [' '];
 }
 
-var panel=$('panel'),hideT,toastT;
-function poke(){
-  document.body.classList.remove('idle');
-  clearTimeout(hideT);
-  if(!panel.classList.contains('open'))hideT=setTimeout(function(){document.body.classList.add('idle')},3000);
-}
-function setPanel(o){panel.classList.toggle('open',o);poke()}
-function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},4200)}
+function buildMask() {
+  if (!cols || !rows) return;
 
-var sw=$('sw');
-COLORS.forEach(function(c){
-  var b=document.createElement('button');b.style.background=c;b.dataset.c=c;b.setAttribute('aria-label','Colour '+c);
-  b.onclick=function(){S.color=c;sync();restyle();save()};sw.appendChild(b);
-});
-var cp=document.createElement('input');cp.type='color';cp.setAttribute('aria-label','Custom colour');
-cp.oninput=function(){S.color=cp.value;sync();restyle();save()};sw.appendChild(cp);
+  maskCanvas = document.createElement('canvas');
+  maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
 
-function apply(){
-  document.documentElement.lang=S.lang;document.title=tr('title');
-  document.querySelectorAll('[data-t]').forEach(function(e){var key=e.dataset.t; e.textContent=tr(key) || e.textContent;});
-  $('edit').textContent=tr('edit');$('done').textContent=tr('done');$('lang').textContent=tr('lang');$('txt').placeholder=tr('ph');
-  var f=fsEl()?'xfs':'fs';$('fs').textContent=tr(f);$('fs2').textContent=tr(f);
-}
-function sync(){
-  apply();
-  $('txt').value=S.text;$('speed').value=S.speed;$('size').value=S.size;$('dot').value=S.dot;
-  $('rot').checked=!!S.rot;$('mir').checked=!!S.mir;cp.value=S.color;
-  document.querySelectorAll('#mode button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===S.mode))});
-  sw.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.c===S.color))});
-}
-$('txt').oninput=function(){S.text=this.value;rebuild();save()};
-document.querySelectorAll('#mode button').forEach(function(b){b.onclick=function(){S.mode=b.dataset.v;sync();rebuild();save()}});
-$('speed').oninput=function(){S.speed=+this.value;save()};
-$('size').oninput=function(){S.size=+this.value;rebuild();save()};
-$('dot').oninput=function(){S.dot=+this.value;layout();save()};
-$('rot').onchange=function(){S.rot=this.checked;layout();save()};
-$('mir').onchange=function(){S.mir=this.checked;save()};
-$('edit').onclick=function(){setPanel(!panel.classList.contains('open'))};
-$('done').onclick=function(){setPanel(false)};
-$('lang').onclick=function(){var o=S.lang;S.lang=o==='my'?'en':'my';if(S.text===T[o].def)S.text=T[S.lang].def;sync();rebuild();save()};
-cv.addEventListener('pointerdown',function(){lock();if(panel.classList.contains('open'))setPanel(false);else poke()});
+  const horizontal = settings.mode === 'left' || settings.mode === 'right';
+  const message = settings.message || ' ';
 
-var root=document.documentElement;
-function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement}
-function toggleFS(){
-  var req=root.requestFullscreen||root.webkitRequestFullscreen;
-  if(fsEl()){
-    (document.exitFullscreen||document.webkitExitFullscreen).call(document);
-    return;
-  }
-  setPanel(false);
-  if(!req){noFS();return}
-  try{var p=req.call(root);if(p&&p.catch)p.catch(noFS)}catch(e){noFS()}
-}
-function noFS(){toast(tr('nofs')||'Full screen is not available on this device')}
-function fsLabel(){apply();layout();poke()}
-$('fs').onclick=toggleFS;$('fs2').onclick=toggleFS;
-document.addEventListener('fullscreenchange',fsLabel);
-document.addEventListener('webkitfullscreenchange',fsLabel);
+  const isMyanmar = /[\u1000-\u109F]/.test(message);
+  const factor = isMyanmar ? 0.78 : 0.9;
 
-var wl=null;
-function lock(){
-  try{
-    if('wakeLock' in navigator && !wl && navigator.wakeLock && navigator.wakeLock.request){
-      navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})
+  const fontSize = Math.max(3, rows * settings.size / 100 * factor);
+
+  if (horizontal) {
+    maskCtx.font = '900 ' + fontSize + 'px ' + fontFamily();
+
+    const text = message.replace(/\r/g, '').replace(/\n/g, '   ');
+    const textWidth = maskCtx.measureText(text).width;
+
+    maskWidth = Math.max(1, Math.ceil(textWidth) + cols);
+    maskHeight = rows;
+
+    maskCanvas.width = maskWidth;
+    maskCanvas.height = maskHeight;
+
+    maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
+    maskCtx.font = '900 ' + fontSize + 'px ' + fontFamily();
+    maskCtx.textBaseline = 'middle';
+    maskCtx.textAlign = 'left';
+    maskCtx.fillStyle = '#fff';
+
+    maskCtx.fillText(text, cols / 2, rows / 2);
+  } else {
+    maskWidth = cols;
+    maskHeight = Math.max(rows * 2, 1);
+
+    maskCanvas.width = maskWidth;
+    maskCanvas.height = maskHeight;
+
+    maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
+
+    let fs = fontSize;
+    let lines = [];
+
+    for (let i = 0; i < 30; i++) {
+      lines = wrapText(message, cols - 2, fs);
+
+      const lineHeight = fs * 1.25;
+      const required = lines.length * lineHeight;
+
+      if (required <= maskHeight - 2 || fs <= 3) break;
+      fs *= 0.9;
     }
-  }catch(e){}
+
+    maskCtx.font = '900 ' + fs + 'px ' + fontFamily();
+    maskCtx.fillStyle = '#fff';
+    maskCtx.textAlign = 'center';
+    maskCtx.textBaseline = 'middle';
+
+    const lineHeight = fs * 1.25;
+    const totalHeight = lines.length * lineHeight;
+    const startY = Math.max(1, (maskHeight - totalHeight) / 2);
+
+    lines.forEach((line, i) => {
+      maskCtx.fillText(
+        line,
+        cols / 2,
+        startY + (i + 0.5) * lineHeight
+      );
+    });
+  }
+
+  const pixels = maskCtx.getImageData(
+    0, 0, maskWidth, maskHeight
+  ).data;
+
+  maskData = new Uint8Array(maskWidth * maskHeight);
+
+  for (let i = 0; i < maskData.length; i++) {
+    maskData[i] = pixels[i * 4 + 3] > 90 ? 1 : 0;
+  }
+
+  offset = 0;
 }
-document.addEventListener('visibilitychange',function(){if(!document.hidden)lock()});
 
-var rz;
-function onResize(){cancelAnimationFrame(rz);rz=requestAnimationFrame(layout)}
-window.addEventListener('resize',onResize);
-window.addEventListener('orientationchange',onResize);
-if(window.visualViewport)window.visualViewport.addEventListener('resize',onResize);
+function queueRebuild() {
+  if (rebuildQueued) return;
+  rebuildQueued = true;
 
-sync();layout();lock();poke();
-try{if(document.fonts&&document.fonts.load){document.fonts.load('700 20px "Noto Sans Myanmar"','က').then(rebuild).catch(function(){})}}catch(e){}
-requestAnimationFrame(frame);
+  requestAnimationFrame(() => {
+    rebuildQueued = false;
+    buildMask();
+  });
+}
+
+function hexRGB(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return {
+    r: (n >> 16) & 255,
+    g: (n >> 8) & 255,
+    b: n & 255
+  };
+}
+
+function drawFrame(time) {
+  const dt = lastTime
+    ? Math.min((time - lastTime) / 1000, 0.05)
+    : 0;
+
+  lastTime = time;
+
+  const horizontal = settings.mode === 'left' ||
+                     settings.mode === 'right';
+
+  const vertical = settings.mode === 'up' ||
+                   settings.mode === 'down';
+
+  if (horizontal || vertical) {
+    const direction = settings.mode === 'left' ||
+                      settings.mode === 'up' ? 1 : -1;
+
+    const extent = horizontal ? maskWidth : maskHeight;
+    offset = (offset + direction * settings.speed * dt) % extent;
+
+    if (offset < 0) offset += extent;
+  }
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const color = hexRGB(settings.color);
+  const lit = settings.mode !== 'blink' ||
+              Math.floor(time / 600) % 2 === 0;
+
+  const radius = Math.max(0.7, pitch * dpr * 0.32);
+  const glowRadius = radius * 3.2;
+
+  if (maskData && lit) {
+    ctx.globalAlpha = settings.brightness / 100;
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        let sx = x;
+        let sy = y;
+
+        if (horizontal) {
+          sx = Math.floor((x + Math.floor(offset)) % maskWidth);
+        } else if (vertical) {
+          sy = Math.floor((y + Math.floor(offset)) % maskHeight);
+        }
+
+        if (sx < 0 || sy < 0 ||
+            sx >= maskWidth || sy >= maskHeight) continue;
+
+        if (!maskData[sy * maskWidth + sx]) continue;
+
+        const dx = settings.mirror ? cols - 1 - x : x;
+
+        const px = (dx + 0.5) * pitch * dpr;
+        const py = (y + 0.5) * pitch * dpr;
+
+        if (settings.glow) {
+          const gradient = ctx.createRadialGradient(
+            px, py, radius * 0.4,
+            px, py, glowRadius
+          );
+
+          gradient.addColorStop(0, settings.color + 'aa');
+          gradient.addColorStop(1, settings.color + '00');
+
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(px, py, glowRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = settings.color;
+        ctx.beginPath();
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+
+  animationId = requestAnimationFrame(drawFrame);
+}
+
+function toast(message) {
+  const element = $('toast');
+  element.textContent = message;
+  element.classList.add('show');
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    element.classList.remove('show');
+  }, 2500);
+}
+
+function poke() {
+  document.body.classList.remove('idle');
+  clearTimeout(hideTimer);
+
+  if (!$('panel').classList.contains('open')) {
+    hideTimer = setTimeout(() => {
+      document.body.classList.add('idle');
+    }, 3500);
+  }
+}
+
+function openPanel(open) {
+  $('panel').classList.toggle('open', open);
+  poke();
+}
+
+function updateUI() {
+  $('message').value = settings.message;
+  $('speed').value = settings.speed;
+  $('size').value = settings.size;
+  $('dot').value = settings.dot;
+  $('brightness').value = settings.brightness;
+
+  $('speedValue').textContent = settings.speed;
+  $('sizeValue').textContent = settings.size + '%';
+  $('dotValue').textContent = settings.dot + ' px';
+  $('brightnessValue').textContent = settings.brightness + '%';
+
+  $('rotate').checked = settings.rotate;
+  $('mirror').checked = settings.mirror;
+  $('glow').checked = settings.glow;
+
+  document.querySelectorAll('[data-mode]').forEach(button => {
+    button.classList.toggle(
+      'active',
+      button.dataset.mode === settings.mode
+    );
+    button.textContent = t(button.dataset.mode);
+  });
+
+  document.querySelectorAll('[data-color]').forEach(button => {
+    button.classList.toggle(
+      'active',
+      button.dataset.color === settings.color
+    );
+  });
+
+  $('customColor').value = settings.color;
+
+  $('languageBtn').textContent = t('language');
+  $('editBtn').textContent = t('edit');
+  $('showBtn').textContent = t('show');
+  $('fullBtn').textContent = t('fullscreen');
+  $('fullBtn2').textContent = t('fullscreen');
+  $('installBtn').textContent = t('install');
+
+  $('message').placeholder = t('placeholder');
+
+  $('message').previousElementSibling.textContent = t('message');
+
+  const fields = $('panel').querySelectorAll('.field > .label');
+  const labels = ['effect', 'color'];
+
+  fields.forEach((element, index) => {
+    if (labels[index]) element.textContent = t(labels[index]);
+  });
+
+  const rangeLabels = $('panel').querySelectorAll('.field > label');
+  const rangeKeys = ['speed', 'size', 'dot', 'brightness'];
+
+  rangeLabels.forEach((element, index) => {
+    if (rangeKeys[index]) element.textContent = t(rangeKeys[index]);
+  });
+
+  $('rotate').parentElement.lastChild.textContent = ' ' + t('rotate');
+  $('mirror').parentElement.lastChild.textContent = ' ' + t('mirror');
+  $('glow').parentElement.lastChild.textContent = ' ' + t('glow');
+
+  const isFullscreen = !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement
+  );
+
+  $('fullBtn').textContent = isFullscreen ? t('exit') : t('fullscreen');
+  $('fullBtn2').textContent = isFullscreen ? t('exit') : t('fullscreen');
+}
+
+function change(key, value, rebuild = false) {
+  settings[key] = value;
+  save();
+  if (rebuild) queueRebuild();
+  updateUI();
+}
+
+$('message').addEventListener('input', event => {
+  change('message', event.target.value, true);
+});
+
+document.querySelectorAll('[data-mode]').forEach(button => {
+  button.addEventListener('click', () => {
+    change('mode', button.dataset.mode, true);
+  });
+});
+
+['speed', 'size', 'dot', 'brightness'].forEach(key => {
+  $(key).addEventListener('input', event => {
+    settings[key] = Number(event.target.value);
+
+    if (key === 'dot') layout();
+    else if (key === 'size') queueRebuild();
+
+    save();
+    updateUI();
+  });
+});
+
+$('rotate').addEventListener('change', event => {
+  change('rotate', event.target.checked);
+  layout();
+});
+
+$('mirror').addEventListener('change', event => {
+  change('mirror', event.target.checked);
+});
+
+$('glow').addEventListener('change', event => {
+  change('glow', event.target.checked);
+});
+
+$('colors').addEventListener('click', event => {
+  const button = event.target.closest('[data-color]');
+  if (!button) return;
+
+  change('color', button.dataset.color);
+});
+
+$('customColor').addEventListener('input', event => {
+  change('color', event.target.value);
+});
+
+$('languageBtn').addEventListener('click', () => {
+  settings.lang = settings.lang === 'my' ? 'en' : 'my';
+  save();
+  updateUI();
+});
+
+$('editBtn').addEventListener('click', () => {
+  openPanel(!$('panel').classList.contains('open'));
+});
+
+$('showBtn').addEventListener('click', () => {
+  openPanel(false);
+  poke();
+});
+
+canvas.addEventListener('pointerdown', () => {
+  requestWakeLock();
+  poke();
+
+  if ($('panel').classList.contains('open')) {
+    openPanel(false);
+  }
+});
+
+async function toggleFullscreen() {
+  const current = document.fullscreenElement ||
+                  document.webkitFullscreenElement;
+
+  try {
+    if (current) {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+      return;
+    }
+
+    openPanel(false);
+
+    const request = document.documentElement.requestFullscreen ||
+                    document.documentElement.webkitRequestFullscreen;
+
+    if (!request) {
+      toast(t('unavailable'));
+      return;
+    }
+
+    await request.call(document.documentElement);
+
+  } catch (error) {
+    toast(t('unavailable'));
+  }
+}
+
+$('fullBtn').addEventListener('click', toggleFullscreen);
+$('fullBtn2').addEventListener('click', toggleFullscreen);
+
+document.addEventListener('fullscreenchange', () => {
+  layout();
+  updateUI();
+  poke();
+});
+
+document.addEventListener('webkitfullscreenchange', () => {
+  layout();
+  updateUI();
+  poke();
+});
+
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator) || document.hidden || wakeLock) return;
+
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+
+    wakeLock.addEventListener('release', () => {
+      wakeLock = null;
+    });
+
+  } catch (error) {
+    wakeLock = null;
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) requestWakeLock();
+});
+
+let resizeTimer;
+
+function resize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    layout();
+  }, 80);
+}
+
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', resize);
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', resize);
+}
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  $('installBtn').hidden = false;
+});
+
+$('installBtn').addEventListener('click', async () => {
+  if (!installPrompt) return;
+
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+
+  installPrompt = null;
+  $('installBtn').hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  $('installBtn').hidden = true;
+  toast('App installed successfully');
+});
+
+async function initializePWA() {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    try {
+      await navigator.serviceWorker.register('./sw.js');
+    } catch (error) {
+      console.warn('Service worker registration failed:', error);
+    }
+  }
+}
+
+async function initialize() {
+  updateUI();
+  layout();
+  requestWakeLock();
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => queueRebuild());
+  }
+
+  await initializePWA();
+
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    $('installBtn').hidden = true;
+  }
+}
+
+initialize();
+requestAnimationFrame(drawFrame);
+
 })();
 </script>
+
 </body>
 </html>
