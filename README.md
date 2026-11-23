@@ -4,11 +4,12 @@
 
 **A real dot-matrix LED display, right in your phone's browser.**
 
-Scroll it. Flash it. Go full screen. No install, no build step, no dependencies.
+Scroll it. Flash it. Go full screen. Install as a PWA. Single-file `index.html`, no build step, no dependencies.
 
 [![Live Demo](https://img.shields.io/badge/LIVE%20DEMO-Open%20the%20sign-ff3b30?style=for-the-badge&logo=githubpages&logoColor=white)](https://ath1t.github.io/led-signboard/)
 
 ![Single file](https://img.shields.io/badge/single_file-index.html-1f2328?style=flat-square)
+![PWA](https://img.shields.io/badge/PWA-installable-111827?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/dependencies-none-2ea44f?style=flat-square)
 ![Hosting](https://img.shields.io/badge/hosted_on-GitHub_Pages-0969da?style=flat-square)
 ![Mobile](https://img.shields.io/badge/built_for-mobile-8957e5?style=flat-square)
@@ -19,36 +20,38 @@ Scroll it. Flash it. Go full screen. No install, no build step, no dependencies.
 
 ## ✨ Overview
 
-LED Sign Board turns your phone or desktop browser into a glowing dot-matrix sign. Type a message, choose an effect and colour, then show it full screen. The app is a single `index.html` file, so there is no installation or build process. Your settings are saved locally in your browser.
+LED Sign Board turns your phone or desktop browser into a glowing dot-matrix sign. Type a message (including Myanmar Unicode), pick an effect, brightness, and colour, then show it full screen. Everything lives inside a single `index.html` file with inline PWA manifest/icon/service-worker support, no build step, and local browser storage.
 
 ## 🎛️ Features
 
 | | Feature | Details |
 |---|---|---|
-| 🔴 | **Dot-matrix display** | LED-style dots with a soft glow |
-| 🎞️ | **Four effects** | Scroll left, scroll right, still, and blink |
-| 🎚️ | **Fine control** | Adjust scroll speed, text size, and dot size |
+| 🔴 | **Dot-matrix display** | LED-style dots with a toggleable soft glow |
+| 🎞️ | **Six effects** | Scroll left, scroll right, scroll up, scroll down, still, and blink |
+| 🎚️ | **Fine control** | Adjust animation speed, text size, LED dot size, and brightness |
 | 🎨 | **Colour** | Six presets plus a custom colour picker |
-| 📱 | **Mobile-friendly controls** | Touch-sized buttons, responsive settings panel, and safe-area spacing for notched screens |
-| 📺 | **Full screen** | Controls fade after 3 seconds; tap the sign to bring them back |
-| 🔄 | **Sideways mode** | Turn the sign sideways while holding your phone upright |
-| 🪞 | **Mirror text** | Flip the message for reflections and windows |
-| 🔆 | **Stays awake** | Requests a screen wake lock where the browser supports it |
-| 💾 | **Remembers you** | Settings are saved in your browser on your device |
+| 🌐 | **Bilingual UI & Myanmar text** | Switch interface language between Myanmar (`မြန်မာ`) and English |
+| 📲 | **Single-file PWA** | Inline manifest, SVG icon, and service worker for standalone launch |
+| 📱 | **Mobile-friendly controls** | Touch-sized buttons, scrollable settings panel, and safe-area spacing for notched screens |
+| 📺 | **Full screen** | Top bar fades after 3.5 seconds of inactivity; tap the sign to bring it back |
+| 🔄 | **Rotate 90°** | Rotate the display 90° while holding your phone upright |
+| 🪞 | **Mirror text** | Flip the message horizontally for reflections and windows |
+| 🔆 | **Stays awake** | Requests a screen wake lock where supported by the browser |
+| 💾 | **Remembers you** | Settings are saved locally in `localStorage` on your device |
 
 ## 🚀 Quick Start
 
 1. Open **[ath1t.github.io/led-signboard](https://ath1t.github.io/led-signboard/)** in your phone's browser.
-2. Tap **Edit** and enter your message.
-3. Choose an effect, colour, and text or dot size.
-4. Tap **Show sign**.
-5. Tap **Full screen** if your browser supports it. Tap the sign to bring the controls back.
+2. Tap **Edit** (or **ပြင်ရန်**) and enter your message.
+3. Choose an animation effect, speed, text size, dot size, brightness, and colour.
+4. Tap **Show sign** (or **ပြသရန်**).
+5. Tap **Full screen** if supported, or **Install app** when prompted by your browser. Tap the sign anytime to bring controls back.
 
 > [!TIP]
-> **iPhone:** Full-screen support varies by browser and iOS version. If Safari does not offer full screen, use **Share → Add to Home Screen**, then open the sign from its Home Screen icon for a more immersive view.
+> **iPhone:** Full-screen support varies by browser and iOS version. Use **Share → Add to Home Screen**, then launch from the Home Screen icon for a standalone app view.
 
 > [!TIP]
-> **Mobile layout:** The settings panel scrolls when it does not fit on screen. Use **Turn sign sideways** to show a wider sign while holding your phone upright.
+> **Mobile layout:** The settings panel scrolls when it exceeds screen height. Use **Rotate display 90°** to display a wider sign while holding your phone upright.
 
 ## 🌐 Host Your Own
 
@@ -63,22 +66,3 @@ LED Sign Board turns your phone or desktop browser into a glowing dot-matrix sig
 
 ```text
 https://<username>.github.io/<repo-name>/
-```
-
-If the site does not publish, add an empty file named `.nojekyll` to the repository root.
-
-</details>
-
-## 📝 Notes
-
-- If a message looks cramped, lower **Text size** or **Dot size**.
-- The app works locally in your browser; your message and settings are not sent to a server.
-- Screen wake lock and full-screen behavior depend on browser and device support.
-
----
-
-<div align="center">
-
-**Vibe coded by Thio**
-
-</div>
